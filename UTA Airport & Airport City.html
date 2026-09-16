@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UTA Airport & Airport City - Data Center Strategy Dashboard</title>
+  
+  <!-- Fonts & Tailwind CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --bg-dark: #070a13;
+      --card-bg: rgba(15, 23, 42, 0.85);
+    }
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.1), transparent 45%);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', 'Sarabun', sans-serif;
+      min-height: 100vh;
+    }
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .nav-btn.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .pin-pulse {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+      animation: pulse-animation 2s infinite;
+    }
+    @keyframes pulse-animation {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Section -->
+    <header class="glass-panel rounded-2xl p-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="p-2.5 bg-blue-600/20 text-blue-400 rounded-xl text-2xl border border-blue-500/30">
+            <i class="fa-solid fa-plane-departure"></i>
+          </span>
+          <div>
+            <h1 class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+              U-Tapao Airport & Airport City (UTA)
+            </h1>
+            <p class="text-xs md:text-sm text-gray-400">Master Strategy: Data Center Site Selection & Infrastructure Planning</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> TIA-942-C & ICAO Compliant
+        </span>
+        <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/30">
+          <i class="fa-solid fa-file-pdf mr-1.5"></i> Export Summary
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Cards Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="glass-panel p-4 rounded-xl border-l-4 border-l-orange-500">
+        <p class="text-[10px] text-gray-400 font-semibold uppercase">Airport Core DCs (DC1 + DC2)</p>
+        <h3 class="text-lg font-extrabold text-orange-400">~80 Racks (40+40)</h3>
+        <p class="text-[10px] text-gray-400">640 kW Total Power (8 kW / Rack)</p>
+      </div>
+      <div class="glass-panel p-4 rounded-xl border-l-4 border-l-cyan-500">
+        <p class="text-[10px] text-gray-400 font-semibold uppercase">Smart City DC (Main + Edge E1-E9)</p>
+        <h3 class="text-lg font-extrabold text-cyan-400">19 - 27 Racks</h3>
+        <p class="text-[10px] text-gray-400">152 - 216 kW Total Power (8 kW / Rack)</p>
+      </div>
+      <div class="glass-panel p-4 rounded-xl border-l-4 border-l-emerald-500">
+        <p class="text-[10px] text-gray-400 font-semibold uppercase">Total Project Capacity</p>
+        <h3 class="text-lg font-extrabold text-emerald-400">99 - 107 Racks</h3>
+        <p class="text-[10px] text-gray-400">792 - 856 kW Total Power (8 kW / Rack)</p>
+      </div>
+      <div class="glass-panel p-4 rounded-xl border-l-4 border-l-purple-500">
+        <p class="text-[10px] text-gray-400 font-semibold uppercase">Geo-DR Site (Off-Site)</p>
+        <h3 class="text-lg font-extrabold text-purple-400">Bangkok Site (&gt;120km)</h3>
+        <p class="text-[10px] text-gray-400">Async Replication Backup</p>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-gray-800 pb-3">
+      <button onclick="switchView('masterplan')" id="nav-masterplan" class="nav-btn active px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent transition">
+        <i class="fa-solid fa-map-marked-alt mr-1.5"></i> 1. UTA Masterplan & Pin Locations
+      </button>
+      <button onclick="switchView('geolocation')" id="nav-geolocation" class="nav-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-gray-400 hover:text-white transition">
+        <i class="fa-solid fa-earth-asia mr-1.5"></i> 2. Geo-Location Strategy
+      </button>
+      <button onclick="switchView('assessment')" id="nav-assessment" class="nav-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-gray-400 hover:text-white transition">
+        <i class="fa-solid fa-clipboard-check mr-1.5"></i> 3. Assessment Checklist Matrix
+      </button>
+      <button onclick="switchView('converged')" id="nav-converged" class="nav-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-gray-400 hover:text-white transition">
+        <i class="fa-solid fa-network-wired mr-1.5"></i> 4. Converged Operations
+      </button>
+      <button onclick="switchView('engineering')" id="nav-engineering" class="nav-btn px-4 py-2.5 rounded-xl text-xs font-bold border border-transparent text-gray-400 hover:text-white transition">
+        <i class="fa-solid fa-microchip mr-1.5"></i> 5. Technical Specs Matrix
+      </button>
+    </div>
+
+    <!-- VIEW 1: MASTERPLAN MAP SELECTION -->
+    <div id="view-masterplan" class="space-y-6">
+      <div class="glass-panel p-6 rounded-2xl space-y-4">
+        <div class="flex justify-between items-center flex-wrap gap-2">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+              ผังตำแหน่ง Data Center ตรงตามแผนผัง Masterplan โครงการ UTA
+            </h2>
+            <p class="text-xs text-gray-400">คลิกที่หมุดบนภาพเพื่อดูรายละเอียดการจัดวางระบบแต่ละจุด</p>
+          </div>
+          <div class="flex flex-wrap gap-2 text-[11px]">
+            <span class="px-2.5 py-1 bg-orange-500/20 text-orange-300 rounded border border-orange-500/30 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> DC1 / DC2: Airport Core (~80 Racks)
+            </span>
+            <span class="px-2.5 py-1 bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/30 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> DC: Smart City Main DC
+            </span>
+            <span class="px-2.5 py-1 bg-sky-500/20 text-sky-300 rounded border border-sky-500/30 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> E1 - E9: Smart City Edge DCs
+            </span>
+          </div>
+        </div>
+
+        <!-- Masterplan Map Box -->
+        <div class="relative w-full rounded-2xl border border-gray-700 overflow-hidden shadow-2xl bg-gray-950">
+          <div class="w-full relative overflow-hidden flex items-center justify-center">
+            <img src="map.jpg" alt="UTA Masterplan Map" class="w-full h-auto object-cover opacity-90 block" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'p-16 text-center text-amber-400 text-sm\'><i class=\'fa-solid fa-triangle-exclamation text-3xl mb-2\'></i><br>ไม่พบไฟล์รูปภาพ <b>map.jpg</b><br><span class=\'text-xs text-gray-400\'>กรุณาตรวจสอบว่าวางไฟล์ภาพไว้ในโฟลเดอร์เดียวกันกับไฟล์ HTML นี้แล้วหรือยัง</span></div>';">
+          </div>
+
+          <!-- PIN DC1: Airport Core DC1 -->
+          <div onclick="selectPin('DC1')" class="absolute top-[44%] right-[33%] group cursor-pointer z-30">
+            <div class="relative flex items-center justify-center">
+              <span class="w-7 h-7 rounded-full bg-orange-600 text-white font-extrabold text-[11px] flex items-center justify-center border-2 border-white pin-pulse shadow-lg transition transform group-hover:scale-125">DC1</span>
+            </div>
+          </div>
+
+          <!-- PIN DC2: Airport Core DC2 -->
+          <div onclick="selectPin('DC2')" class="absolute top-[28%] right-[2.5%] group cursor-pointer z-30">
+            <div class="relative flex items-center justify-center">
+              <span class="w-7 h-7 rounded-full bg-orange-600 text-white font-extrabold text-[11px] flex items-center justify-center border-2 border-white pin-pulse shadow-lg transition transform group-hover:scale-125">DC2</span>
+            </div>
+          </div>
+
+          <!-- PIN DC: Smart City Main DC -->
+          <div onclick="selectPin('DC')" class="absolute top-[43%] left-[32%] group cursor-pointer z-30">
+            <div class="relative flex items-center justify-center">
+              <span class="w-8 h-8 rounded-full bg-cyan-500 text-gray-950 font-extrabold text-xs flex items-center justify-center border-2 border-white pin-pulse shadow-lg transition transform group-hover:scale-125">DC</span>
+            </div>
+          </div>
+
+          <!-- EDGE PINS (E1 - E9) -->
+          <div onclick="selectPin('E1')" class="absolute top-[23%] left-[56.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E1</span>
+          </div>
+          <div onclick="selectPin('E2')" class="absolute top-[37%] left-[45.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E2</span>
+          </div>
+          <div onclick="selectPin('E3')" class="absolute top-[40%] left-[8%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E3</span>
+          </div>
+          <div onclick="selectPin('E4')" class="absolute top-[71%] left-[9%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E4</span>
+          </div>
+          <div onclick="selectPin('E5')" class="absolute top-[75%] left-[18.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E5</span>
+          </div>
+          <div onclick="selectPin('E6')" class="absolute top-[75%] left-[30.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E6</span>
+          </div>
+          <div onclick="selectPin('E7')" class="absolute top-[73%] left-[43.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E7</span>
+          </div>
+          <div onclick="selectPin('E8')" class="absolute top-[57%] left-[48%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E8</span>
+          </div>
+
+          <!-- PIN E9: Updated Position according to Reference Image -->
+          <div onclick="selectPin('E9')" class="absolute top-[21%] left-[73.5%] group cursor-pointer z-20">
+            <span class="w-6 h-6 rounded-full bg-sky-500 text-gray-950 font-bold text-[10px] flex items-center justify-center border border-white shadow transition transform group-hover:scale-125">E9</span>
+          </div>
+        </div>
+
+        <!-- Pin Dynamic Information -->
+        <div id="pin-details-card" class="glass-panel p-5 rounded-xl border-l-4 border-l-orange-500 space-y-3">
+          <div class="flex justify-between items-center flex-wrap gap-2">
+            <h3 id="pin-title" class="text-base font-bold text-orange-400 flex items-center gap-2">
+              <i class="fa-solid fa-location-dot"></i> Pin DC1: Airport Core Data Center 1 (Primary Core)
+            </h3>
+            <span id="pin-badge" class="px-2.5 py-1 bg-orange-500/20 text-orange-300 text-xs font-bold rounded border border-orange-500/40">AIRPORT CORE (~40 RACKS)</span>
+          </div>
+          <p id="pin-desc" class="text-xs text-gray-300 leading-relaxed">
+            <b>ตำแหน่งในภาพ:</b> บริเวณด้านหน้าอาคารผู้โดยสารหลัก (Passenger Terminal Building)<br>
+            <b>หน้าที่ระบบ:</b> รองรับระบบปฏิบัติการการบินวิกฤต (Critical Flight Operations) เช่น Check-in, Immigration, สายพานสัมภาระ (BHS) และระบบสารสนเทศเที่ยวบิน (FIDS)
+          </p>
+        </div>
+      </div>
+
+      <!-- DATA CENTER COMPONENTS TABLE (3 COLUMNS) -->
+      <div class="glass-panel p-6 rounded-2xl space-y-4 border-t-2 border-t-cyan-500">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+            ตารางเปรียบเทียบองค์ประกอบ Data Center (Airport Core vs Smart City)
+          </h2>
+          <p class="text-xs text-gray-400">ตารางวิเคราะห์และสรุปข้อกำหนดทางวิศวกรรมสถาปัตยกรรมศูนย์ข้อมูลและพื้นที่ใช้งาน 12 หัวข้อหลัก</p>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-800 rounded-xl">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-900 text-gray-200 uppercase font-semibold">
+                <th class="p-3.5 border-b border-gray-800 w-1/4">หัวข้อ / รายละเอียด</th>
+                <th class="p-3.5 border-b border-gray-800 text-orange-400 w-3/8">DC-A (Airport Core DCs: DC1 + DC2)</th>
+                <th class="p-3.5 border-b border-gray-800 text-cyan-400 w-3/8">DC-B (Smart City DCs: Main DC + Edge E1-E9)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-gray-300">
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-bullseye"></i>
+                    <span>1. กลุ่มเป้าหมายและการรองรับ</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">รองรับผู้โดยสาร 60 ล้านคน/ปี</b><br>
+                  <span class="text-gray-400">สำหรับระบบงานวิกฤต (Critical Systems): เช็คอิน, ตรวจคนเข้าเมือง (Immigration), สายพานสัมภาระ (BHS) และการบริหารจัดการน่านฟ้า</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">รองรับพื้นที่เชิงพาณิชย์ & โรงแรม 4,800 ห้อง</b><br>
+                  <span class="text-gray-400">สำหรับระบบ Smart Building, CCTV AI, Wi-Fi ทั่วโครงการ, ระบบ Billing และ IoT โซนพาณิชย์</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span>2. สถาปัตยกรรมระบบ</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">Airport Dual DCs (DC1 + DC2)</b><br>
+                  <span class="text-gray-400">ทำงานแบบ Active-Active Synchronous ห่างกันทางกายภาพ ป้องกันอุบัติภัยเดี่ยว (Single Point of Failure)</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">1 Main DC (DC) + 9 Edge DCs (E1-E9)</b><br>
+                  <span class="text-gray-400">สถาปัตยกรรมกระจายศูนย์ Main DC ประจำ MICE Center และ Edge DCs ตามโซนต่างๆ</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-server"></i>
+                    <span>3. จำนวนแร็ค (Racks)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">~80 แร็ค</b> (DC1: 40 Racks / DC2: 40 Racks)<br>
+                  <span class="text-gray-400">รองรับ Server, High-Performance Storage, Dual Core Network และ Security Engines Full Redundancy</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">19 - 27 แร็ค</b> (รวมทั้งโครงการ)<br>
+                  <span class="text-gray-400">• Main Smart City DC: 10 - 12 แร็ค<br>• Edge Nodes (E1-E9): โซนละ 1 - 2 แร็ค</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>4. พื้นที่ห้องเซิร์ฟเวอร์ (White Space)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">320 - 400 ตารางเมตร</b><br>
+                  <span class="text-gray-400">คำนวณจาก DC1 (160-200 ตร.ม.) + DC2 (160-200 ตร.ม.)</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">75 - 110 ตารางเมตร</b><br>
+                  <span class="text-gray-400">นับรวมพื้นที่ห้องศูนย์กลาง Smart City DC และห้อง Edge (E1-E9) ทุกจุด</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-building"></i>
+                    <span>5. พื้นที่อาคารรวม (Total Area)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">800 - 1,000 ตารางเมตร</b><br>
+                  <span class="text-gray-400">รวม 2 อาคาร (อาคารละ 400-500 ตร.ม.) รวมห้อง UPS, แบตเตอรี่, CRAC และระบบความปลอดภัย</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">190 - 280 ตารางเมตร</b><br>
+                  <span class="text-gray-400">รวมพื้นที่สนับสนุนวิศวกรรมของ Main DC และตู้ Micro DC ประจำโซน E1-E9</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>6. Electrical Systems & UPS</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  Modular UPS (2N / Tier IV Fault Tolerant), Battery Bank, Generator สองชุดแยกอิสระทั้งสองอาคาร
+                </td>
+                <td class="p-3.5">
+                  Modular UPS (N+1) สำหรับ Main DC และ Smart UPS สำรองไฟประจำตู้ Edge Micro DC
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-snowflake"></i>
+                    <span>7. Cooling Systems</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  Precision Cooling (Chilled Water/InRow CRAC) ควบคุมความชื้น อุณหภูมิแม่นยำ 24x7 N+2 Redundancy
+                </td>
+                <td class="p-3.5">
+                  Precision Air conditioning สำหรับ Main DC และ Rack-Level InRow/Direct Cooling สำหรับ Edge Nodes
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-plug-circle-bolt"></i>
+                    <span>8. กำลังไฟฟ้า (Power Capacity)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">640 kW Total Power</b><br>
+                  <span class="text-gray-400">• Power Density: <b>8 kW / Rack</b><br>• รองรับระบบ High-Density Compute & Mission-Critical Workloads</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">152 - 216 kW Total Power</b><br>
+                  <span class="text-gray-400">• Power Density: <b>8 kW / Rack</b><br>• Main DC: 80 - 96 kW<br>• Edge Nodes (E1-E9): 8 - 16 kW ต่อ Micro DC Node</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-weight-hanging"></i>
+                    <span>9. การรองรับน้ำหนักพื้น (Structural Load / Weight)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">1,200 - 1,500 kg/ตร.ม. (Raised Floor)</b><br>
+                  <span class="text-gray-400">ออกแบบโครงสร้างรองรับน้ำหนัก UPS, แบตเตอรี่ Lead-Acid/Lithium และ Server Racks แบบ Heavy-Duty</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">800 - 1,000 kg/ตร.ม.</b><br>
+                  <span class="text-gray-400">สำหรับพื้นที่ Main DC และติดตั้งบนพื้นโครงสร้างอาคารมาตรฐาน/ตู้ยกสูงสำหรับ Edge Nodes</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>10. Network & Fiber Connectivity</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  Dual Diverse Fiber Ring เชื่อมระหว่าง DC1 & DC2 และตรงสู่ระบบควบคุมการบินด้วยแนวท่อใต้ดินคนละทิศทาง
+                </td>
+                <td class="p-3.5">
+                  Fiber Optic Ring Backbone เชื่อมจาก Smart City Main DC กระจายไปยัง Edge Nodes (E1-E9)
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>11. Fire Protection & Security</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  ระบบดับเพลิงสารสะอาด NOVEC 1230/FM200, VESDA, Biometric Access Control เข็มงวดระดับการบินสากล
+                </td>
+                <td class="p-3.5">
+                  ระบบดับเพลิงสารสะอาดเฉพาะห้อง Main DC และตู้ดับเพลิงอัตโนมัติในตู้ Edge Rack สำเร็จรูป
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-calculator"></i>
+                    <span>12. หมายเหตุสัดส่วนพื้นที่</span>
+                  </div>
+                </td>
+                <td class="p-3.5" colspan="2">
+                  <span class="text-amber-400 font-semibold">พื้นที่รวมอาคาร (Total Area) มีขนาดเป็น 2.5 เท่า ของพื้นที่ห้องเซิร์ฟเวอร์ (White Space)</span><br>
+                  <span class="text-gray-400">เนื่องจากต้องเผื่อพื้นที่สำหรับเครื่องสำรองไฟฟ้า (UPS), แบตเตอรี่, ระบบปรับอากาศควบคุมความชื้น (CRAC/CRAH), และระบบดับเพลิงอัตโนมัติ ตามมาตรฐานสากล TIA-942</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: GEO-LOCATION STRATEGY -->
+    <div id="view-geolocation" class="space-y-6 hidden">
+      <div class="bg-[#0b0f19] border border-gray-800/80 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+        <div>
+          <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 bg-cyan-400 rounded-full inline-block"></span>
+            ผังการเชื่อมต่อโครงข่ายภาพรวม (GEO-Location & Link Topology)
+          </h2>
+          <p class="text-xs text-gray-400 mt-1">
+            แสดงการเชื่อมโยง Active-Active Synchronous ระหว่าง DC1 & DC2 และ Smart City Main DC พร้อมการสำรองข้อมูล Asynchronous ไปยัง Bangkok DR Site
+          </p>
+        </div>
+
+        <div class="relative w-full bg-[#080b13] border border-gray-800 rounded-2xl p-6 md:p-12 min-h-[440px] flex flex-col justify-between overflow-hidden">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 230 140 Q 500 80 770 140" fill="none" stroke="#00d8f6" stroke-width="2.5" stroke-dasharray="6,6" opacity="0.9" />
+            <path d="M 210 180 Q 260 300 500 340" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6,6" opacity="0.8" />
+            <path d="M 790 180 Q 740 300 500 340" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6,6" opacity="0.8" />
+          </svg>
+
+          <div class="relative z-10 flex justify-center mb-4">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#0d2a38] border border-[#00bcd4]/50 text-[#00e5ff] text-xs font-bold shadow-lg shadow-cyan-950/50">
+              <i class="fa-solid fa-bolt text-xs"></i> Active-Active Synchronous Dark Fiber Ring (&lt; 2 ms Latency)
+            </div>
+          </div>
+
+          <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8 px-0 md:px-8">
+            <div class="w-full md:w-[320px] bg-[#0c1425]/90 border border-cyan-500/40 rounded-xl p-4 shadow-xl backdrop-blur-md">
+              <div class="flex justify-between items-start mb-2">
+                <span class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/80 text-[10px] font-bold uppercase">
+                  SMART CITY ZONE
+                </span>
+                <i class="fa-solid fa-city text-cyan-400 text-lg"></i>
+              </div>
+              <h3 class="text-base font-bold text-white mb-1">Smart City Main DC & Edges</h3>
+              <p class="text-xs text-gray-400">10-12 Racks (Main DC) + E1-E9 Micro DCs</p>
+            </div>
+
+            <div class="w-full md:w-[320px] bg-[#0c1425]/90 border border-orange-500/40 rounded-xl p-4 shadow-xl backdrop-blur-md">
+              <div class="flex justify-between items-start mb-2">
+                <span class="px-2 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-800/80 text-[10px] font-bold uppercase">
+                  AIRPORT CORE ZONE
+                </span>
+                <i class="fa-solid fa-plane text-orange-400 text-lg"></i>
+              </div>
+              <h3 class="text-base font-bold text-white mb-1">Airport Dual DCs (DC1 + DC2)</h3>
+              <p class="text-xs text-gray-400">~80 Racks (DC1: 40 + DC2: 40 Racks)</p>
+            </div>
+          </div>
+
+          <div class="relative z-10 flex justify-center mt-12">
+            <div class="w-full md:w-[360px] bg-[#120f24]/90 border border-purple-500/40 rounded-xl p-4 text-center shadow-xl backdrop-blur-md">
+              <div class="inline-block px-2.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/80 text-[10px] font-bold uppercase mb-2">
+                OFF-SITE DR (&gt;120 KM)
+              </div>
+              <div class="flex items-center justify-center gap-2 mb-1">
+                <i class="fa-solid fa-database text-purple-400 text-base"></i>
+                <h3 class="text-base font-bold text-white">Bangkok Disaster Recovery Site</h3>
+              </div>
+              <p class="text-xs text-gray-400">Geo-Redundancy • Asynchronous Replication</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Sites Detailed Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 pt-2">
+          <div class="bg-[#1f1207] border border-orange-500/30 rounded-2xl p-5 space-y-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex justify-end">
+                <span class="px-3 py-1 bg-orange-600 text-white text-[11px] font-extrabold rounded-full tracking-wide">
+                  PRIMARY AIRPORT CORE
+                </span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-full bg-orange-600/30 text-orange-400 font-extrabold text-sm flex items-center justify-center border border-orange-500/50 shrink-0">1</span>
+                <div>
+                  <h3 class="text-base font-bold text-white">Airport Dual Core (DC1 + DC2)</h3>
+                  <p class="text-xs text-gray-400">Terminal & Support Operations Zone</p>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs pt-1 border-t border-gray-800/80">
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">ขนาดความจุ:</span>
+                  <span class="font-bold text-white">80 Racks (640 kW Total Power)</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">รองรับผู้ใช้บริการ:</span>
+                  <span class="font-bold text-emerald-400">60 ล้านคน/ปี</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-gray-400">วัตถุประสงค์หลัก:</span>
+                  <span class="font-bold text-white">Check-in, Immigration, BHS, Airspace</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-[#0f0a04] border border-gray-800/80 rounded-xl p-3 text-xs text-gray-300 leading-relaxed mt-2">
+              ศูนย์ข้อมูลหลักสนามบินออกแบบสถาปัตยกรรม Dual-Core Tier IV Fault Tolerant สองอาคารแยกอิสระเพื่อความเสถียรสูงสุด
+            </div>
+          </div>
+
+          <div class="bg-[#071927] border border-cyan-500/30 rounded-2xl p-5 space-y-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex justify-end">
+                <span class="px-3 py-1 bg-cyan-500 text-gray-950 text-[11px] font-extrabold rounded-full tracking-wide">
+                  SMART CITY INFRASTRUCTURE
+                </span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-full bg-cyan-500/30 text-cyan-400 font-extrabold text-sm flex items-center justify-center border border-cyan-500/50 shrink-0">2</span>
+                <div>
+                  <h3 class="text-base font-bold text-white">Smart City Main DC & Edges</h3>
+                  <p class="text-xs text-gray-400">Main DC + E1 - E9 Edge Nodes</p>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs pt-1 border-t border-gray-800/80">
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">ขนาดความจุ:</span>
+                  <span class="font-bold text-white">19 - 27 Racks (152 - 216 kW)</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">รองรับผู้ใช้บริการ:</span>
+                  <span class="font-bold text-emerald-400">โรงแรม 4,800 ห้อง + IoT</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-gray-400">วัตถุประสงค์หลัก:</span>
+                  <span class="font-bold text-white">Main DC (MICE) + Edge Nodes E1-E9</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-[#030d17] border border-gray-800/80 rounded-xl p-3 text-xs text-gray-300 leading-relaxed mt-2">
+              เน้นลด Latency ระบบ IoT และ CCTV AI โดยมี Smart City Main DC ใจกลาง MICE และ Edge Nodes (E1-E9) กระจายทั่วพื้นที่
+            </div>
+          </div>
+
+          <div class="bg-[#170e2b] border border-purple-500/30 rounded-2xl p-5 space-y-4 shadow-xl relative overflow-hidden flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="flex justify-end">
+                <span class="px-3 py-1 bg-purple-600 text-white text-[11px] font-extrabold rounded-full tracking-wide">
+                  GEO-DISASTER RECOVERY
+                </span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="w-8 h-8 rounded-full bg-purple-600/30 text-purple-300 font-extrabold text-sm flex items-center justify-center border border-purple-500/50 shrink-0">3</span>
+                <div>
+                  <h3 class="text-base font-bold text-white">Site C: Off-site DR (Bangkok)</h3>
+                  <p class="text-xs text-gray-400">Greater Bangkok Metropolitan</p>
+                </div>
+              </div>
+              <div class="space-y-2 text-xs pt-1 border-t border-gray-800/80">
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">ระยะห่างทางภูมิศาสตร์:</span>
+                  <span class="font-bold text-white">&gt; 120 กิโลเมตร</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-gray-800/40">
+                  <span class="text-gray-400">รูปแบบการซิงค์:</span>
+                  <span class="font-bold text-amber-400">Asynchronous Replication</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-gray-400">วัตถุประสงค์หลัก:</span>
+                  <span class="font-bold text-white">Geo-DR & Business Continuity</span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-[#0a0514] border border-gray-800/80 rounded-xl p-3 text-xs text-gray-300 leading-relaxed mt-2">
+              ศูนย์สำรองกู้คืนภัยพิบัติระดับภูมิภาค อยู่นอกเขตความเสี่ยงร่วมเพื่อความปลอดภัยสูงสุดของข้อมูล
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: ASSESSMENT CHECKLIST MATRIX -->
+    <div id="view-assessment" class="space-y-6 hidden">
+      <div class="glass-panel p-6 rounded-2xl space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+            แบบประเมินและเปรียบเทียบสถานที่ตั้ง (Data Center Location Evaluation Matrix)
+          </h2>
+          <p class="text-xs text-gray-400">เครื่องมือประเมินความเหมาะสม 3 ตำแหน่งอ้างอิงตามเกณฑ์ TIA-942-C Site Selection Criteria</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gray-950/80 p-4 rounded-xl border border-orange-500/40 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-orange-400">Loc A: Airport Dual Zone (DC1+DC2)</span>
+              <span class="px-2 py-0.5 bg-orange-500/20 text-orange-300 font-extrabold text-xs rounded">96/100 (Pass Tier IV)</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2">
+              <div class="bg-orange-500 h-2 rounded-full" style="width: 96%"></div>
+            </div>
+            <p class="text-[11px] text-gray-400">เหมาะเป็น Airport Core DCs (~80 Racks) มั่นคงสูงสุด</p>
+          </div>
+
+          <div class="bg-gray-950/80 p-4 rounded-xl border border-cyan-500/40 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-cyan-400">Loc B: Smart City Main DC (DC)</span>
+              <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 font-extrabold text-xs rounded">90/100 (Pass Tier III)</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2">
+              <div class="bg-cyan-500 h-2 rounded-full" style="width: 90%"></div>
+            </div>
+            <p class="text-[11px] text-gray-400">ศูนย์กลางโครงข่าย Smart City + MICE Area</p>
+          </div>
+
+          <div class="bg-gray-950/80 p-4 rounded-xl border border-sky-500/40 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-sky-400">Loc C: Zone Edge Nodes (E1-E9)</span>
+              <span class="px-2 py-0.5 bg-sky-500/20 text-sky-300 font-extrabold text-xs rounded">82/100 (Micro DC)</span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-2">
+              <div class="bg-sky-500 h-2 rounded-full" style="width: 82%"></div>
+            </div>
+            <p class="text-[11px] text-gray-400">ตู้สำเร็จรูปประมวลผลความหน่วงต่ำประจำโซน</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-800 rounded-xl">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-900 text-gray-200 uppercase font-semibold">
+                <th class="p-3 border-b border-gray-800 w-1/3">หัวข้อประเมิน (Checklist Criteria)</th>
+                <th class="p-3 border-b border-gray-800 text-orange-400 text-center">Loc A: Airport Core (DC1/DC2)</th>
+                <th class="p-3 border-b border-gray-800 text-cyan-400 text-center">Loc B: Smart City Main (DC)</th>
+                <th class="p-3 border-b border-gray-800 text-sky-400 text-center">Loc C: Edge Nodes (E1-E9)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-gray-300">
+              <tr>
+                <td class="p-3 font-semibold">1. ระยะห่างจากแนวรันเวย์ / ปราศจากแรงสั่นสะเทือนปั่นป่วน (TIA-942)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ผ่าน (ออกแบบ Base Isolation)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ดีมาก (&gt; 2.5 กม.)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ดีเยี่ยม (&gt; 3 กม.)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">2. เส้นทางจ่ายไฟฟ้า Utility Dual Feeds (115kV Substation Diversity)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ดีเยี่ยม (Substation สนามบิน)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ดีมาก (แนวท่อไฟฟ้าเมือง)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">เชื่อมต่อจากตึกโซนนั้นๆ</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">3. Fiber Path Diversity (เส้นทางสายสื่อสารสำรองแยกเด็ดขาด)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ผ่าน (Dual Underground Duct)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ผ่าน (Dual Cable Entry)</td>
+                <td class="p-3 text-center font-bold text-sky-400">เชื่อมต่อเข้า Ring หลัก</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold">4. ความเสี่ยงด้านอุทกภัย / ระดับความสูงพื้นที่ (Flood Risk 100 Years)</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ยกระดับ +3.5m MSL</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ยกระดับ +3.0m MSL</td>
+                <td class="p-3 text-center font-bold text-emerald-400">ติดตั้งบนชั้น 2 หรือตู้ยกสูง</td>
+              </tr>
+              <tr class="bg-gray-900/60 font-bold">
+                <td class="p-3 text-white">สรุปผลการประเมิน (Verdict & Standard)</td>
+                <td class="p-3 text-center text-orange-400">Airport Core DCs<br>(Tier IV Fault Tolerant)</td>
+                <td class="p-3 text-center text-cyan-400">Smart City Main DC<br>(Tier III Concurrent)</td>
+                <td class="p-3 text-center text-sky-400">Micro Edge Data Centers<br>(Low-Latency Distributed)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: CONVERGED OPERATIONS -->
+    <div id="view-converged" class="space-y-6 hidden">
+      <div class="glass-panel p-6 rounded-2xl space-y-6">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+            ยุทธศาสตร์ Converged Operations: AOCC และ Smart City OCC Integration
+          </h2>
+          <p class="text-xs text-gray-400">การทำงานร่วมกันระหว่างศูนย์ควบคุมการบินและศูนย์ควบคุมเมืองผ่าน C2C Data Bus และ Shared Situation Awareness</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-gray-950/80 border border-orange-500/30 p-5 rounded-xl space-y-3">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+              <h3 class="font-bold text-sm text-orange-400 flex items-center gap-2">
+                <i class="fa-solid fa-tower-control"></i> AOCC (Airport Core Infrastructure)
+              </h3>
+              <span class="text-[10px] bg-orange-500/20 text-orange-300 px-2 py-0.5 rounded">60M PAX / 80 Racks</span>
+            </div>
+            <ul class="text-xs space-y-2 text-gray-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-orange-400 text-[10px]"></i> ควบคุมระบบปฏิบัติการการบิน (AODB, Gate, Check-in)</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-orange-400 text-[10px]"></i> บริหารระบบตรวจคนเข้าเมือง (Immigration) และระบบ BHS</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-orange-400 text-[10px]"></i> เชื่อมต่อระบบการจราจรทางอากาศ (Airspace Management)</li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-950/80 border border-cyan-500/30 p-5 rounded-xl space-y-3">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+              <h3 class="font-bold text-sm text-cyan-400 flex items-center gap-2">
+                <i class="fa-solid fa-building-user"></i> Smart City OCC (Commercial & Hotel)
+              </h3>
+              <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded">4,800 Rooms & E1-E9 Zones</span>
+            </div>
+            <ul class="text-xs space-y-2 text-gray-300">
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400 text-[10px]"></i> ระบบ Smart Building & IoT ประจำโรงแรม 4,800 ห้อง</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400 text-[10px]"></i> ควบคุมกล้อง CCTV AI และระบบ Wi-Fi กระจายทั่ว 9 Edge Zones</li>
+              <li class="flex items-center gap-2"><i class="fa-solid fa-check text-cyan-400 text-[10px]"></i> บริหารระบบ Smart Grid, Billing และแพลตฟอร์มเมือง</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-gray-900 border border-purple-500/30 p-5 rounded-xl space-y-4">
+          <div class="flex justify-between items-center flex-wrap gap-2">
+            <div>
+              <h4 class="font-bold text-sm text-purple-300 flex items-center gap-2">
+                <i class="fa-solid fa-bolt"></i> Simulation: C2C Joint Crisis Management
+              </h4>
+              <p class="text-xs text-gray-400">ทดลองจำลองสถานการณ์ฉุกเฉินเพื่อดูการส่งต่อข้อมูลแบบ Real-Time ระหว่างสองศูนย์</p>
+            </div>
+            <button onclick="runEmergencySim()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg text-xs transition shadow-lg shadow-purple-600/30">
+              ▶ เล่นสถานการณ์จำลอง (Simulate Emergency Event)
+            </button>
+          </div>
+
+          <div id="sim-output" class="bg-gray-950 p-4 rounded-lg border border-gray-800 text-xs text-gray-400 font-mono space-y-1 min-h-[90px]">
+            <p class="text-gray-500">&gt; ระบบอยู่ในสภาวะปกติ (Normal Operation)... กดปุ่มเพื่อเริ่มจำลองเหตุการณ์</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 5: TECHNICAL SPECS MATRIX -->
+    <div id="view-engineering" class="space-y-6 hidden">
+      <div class="glass-panel p-6 rounded-2xl space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+            ตารางสรุปสเปกและพื้นที่รวมทั้งโครงการ (Combined Total Summary)
+          </h2>
+          <p class="text-xs text-gray-400">สรุปพื้นที่ใช้งาน, ขนาดแร็ค และกำลังไฟฟ้า (Power Density = 8 kW/Rack) รวมทั้งโครงการ UTA Data Center Architecture</p>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-800 rounded-xl">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-900 text-gray-200 uppercase font-semibold">
+                <th class="p-3 border-b border-gray-800">ส่วนงาน</th>
+                <th class="p-3 border-b border-gray-800 text-orange-400">จำนวนแร็คทั้งหมด (Racks)</th>
+                <th class="p-3 border-b border-gray-800 text-yellow-400">กำลังไฟฟ้า (Power @ 8 kW/Rack)</th>
+                <th class="p-3 border-b border-gray-800 text-cyan-400">พื้นที่ห้องเซิร์ฟเวอร์ (White Space)</th>
+                <th class="p-3 border-b border-gray-800 text-emerald-400">พื้นที่รวมอาคาร (Total Area)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-gray-300">
+              <tr>
+                <td class="p-3 font-bold bg-gray-950/40 text-white">Airport DC1 (Terminal Zone)</td>
+                <td class="p-3 font-bold text-orange-400">~40 แร็ค</td>
+                <td class="p-3 font-bold text-yellow-400">320 kW</td>
+                <td class="p-3">160 - 200 ตร.ม.</td>
+                <td class="p-3">400 - 500 ตร.ม.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold bg-gray-950/40 text-white">Airport DC2 (East Cargo/Support Zone)</td>
+                <td class="p-3 font-bold text-orange-400">~40 แร็ค</td>
+                <td class="p-3 font-bold text-yellow-400">320 kW</td>
+                <td class="p-3">160 - 200 ตร.ม.</td>
+                <td class="p-3">400 - 500 ตร.ม.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold bg-gray-950/40 text-white">Smart City Main DC (MICE Center Zone)</td>
+                <td class="p-3 font-bold text-cyan-400">10 - 12 แร็ค</td>
+                <td class="p-3 font-bold text-yellow-400">80 - 96 kW</td>
+                <td class="p-3">40 - 50 ตร.ม.</td>
+                <td class="p-3">100 - 125 ตร.ม.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-bold bg-gray-950/40 text-white">Smart City Edge DCs (Nodes E1 - E9)</td>
+                <td class="p-3 font-bold text-emerald-400">9 - 15 แร็ค (รวม 9 จุด)</td>
+                <td class="p-3 font-bold text-yellow-400">72 - 120 kW</td>
+                <td class="p-3">35 - 60 ตร.ม.</td>
+                <td class="p-3">90 - 155 ตร.ม.</td>
+              </tr>
+              <tr class="bg-gray-900/80 font-extrabold text-white">
+                <td class="p-3 text-emerald-400">รวมทั้งโครงการ (Combined Total)</td>
+                <td class="p-3 text-emerald-400">99 - 107 แร็ค</td>
+                <td class="p-3 text-yellow-400">792 - 856 kW</td>
+                <td class="p-3 text-emerald-400">395 - 510 ตร.ม.</td>
+                <td class="p-3 text-emerald-400">990 - 1,280 ตร.ม.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- UPDATED SECTION: TECHNICAL DESIGN MATRIX -->
+      <div class="glass-panel p-6 rounded-2xl space-y-4 border-t-2 border-t-cyan-500">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 bg-cyan-400 rounded-full"></span>
+            ตารางข้อกำหนดการออกแบบทางวิศวกรรม (Technical Design Matrix)
+          </h2>
+          <p class="text-xs text-gray-400">เปรียบเทียบมาตรฐานและสถาปัตยกรรมโครงสร้างพื้นฐานสำหรับนำไปจัดทำแบบ TOR / Engineering Specs</p>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-800 rounded-xl">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-900 text-gray-200 uppercase font-semibold">
+                <th class="p-3.5 border-b border-gray-800 w-1/4">หัวข้อวิเคราะห์ (TOPIC)</th>
+                <th class="p-3.5 border-b border-gray-800 text-orange-400 w-3/8">AIRPORT DATA CENTER (PIN A)</th>
+                <th class="p-3.5 border-b border-gray-800 text-cyan-400 w-3/8">AIRPORT CITY DC (PIN B)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800 text-gray-300">
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-award"></i>
+                    <span>1. Standards & Tier Target</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-orange-400">ANSI/TIA-942 Rated 4 / Tier IV</b><br>
+                  <span class="text-gray-400">(Fault Tolerant)</span>
+                </td>
+                <td class="p-3.5">
+                  <b class="text-cyan-400">ANSI/TIA-942 Rated 3 / Tier III</b><br>
+                  <span class="text-gray-400">(Concurrently Maintainable)</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-map-pin"></i>
+                    <span>2. Geo-Location Mitigation</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  ป้องกันไอเกลือทะเล (C5-M Coating), ระบบ Base Isolation กันสะเทือนจาก Runway
+                </td>
+                <td class="p-3.5">
+                  ยกระดับ Data Hall ชั้น 2 (+3.0m) ป้องกันอุทกภัย, ป้องกันภัยจากโซนสาธารณะ
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>3. Power Infrastructure</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  2(N+1) Redundant Utility Feeds + Generator รองรับน้ำมันสำรอง 72 ชั่วโมง ณ Full Load
+                </td>
+                <td class="p-3.5">
+                  N+1 Generator + 2N Modular UPS สำรองไฟฟ้าน้ำมัน 48 ชั่วโมง
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-snowflake"></i>
+                    <span>4. Cooling Topology</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  Dual-Loop Chilled Water + TES Tank สำรองน้ำเย็นต่อเนื่อง &gt; 30 นาที (PUE &le; 1.35)
+                </td>
+                <td class="p-3.5">
+                  Precision CRAH Air Distribution + Hot/Cold Aisle Containment
+                </td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-semibold text-white bg-gray-950/40">
+                  <div class="flex items-center gap-2 text-cyan-400">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>5. Security & Cyber (ISO/IEC)</span>
+                  </div>
+                </td>
+                <td class="p-3.5">
+                  ISO/IEC 27001 / 27017, Biometric Zone 4, Unified SOC Integration
+                </td>
+                <td class="p-3.5">
+                  ISO/IEC 27001, Access Control Zone 3, Zero Trust Architecture
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function switchView(viewName) {
+      ['masterplan', 'geolocation', 'assessment', 'converged', 'engineering'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        document.getElementById(`nav-${v}`).classList.remove('active');
+        document.getElementById(`nav-${v}`).classList.add('text-gray-400');
+      });
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`nav-${viewName}`);
+      activeBtn.classList.add('active');
+      activeBtn.classList.remove('text-gray-400');
+    }
+
+    const pinData = {
+      'DC1': {
+        title: "Pin DC1: Airport Core DC1 (Terminal Main Hub)",
+        badge: "AIRPORT CORE (~40 RACKS)",
+        cardBorder: "border-l-orange-500",
+        badgeStyle: "bg-orange-500/20 text-orange-300 border-orange-500/40",
+        titleStyle: "text-orange-400",
+        desc: "ตำแหน่งในภาพ: บริเวณเชื่อมต่อ Passenger Terminal Building\nหน้าที่ระบบ: ประมวลผลระบบสนามบินหลัก Latency ต่ำที่สุดสำหรับ Check-in, Immigration, สายพาน BHS และ FIDS (Power Density: 8 kW/Rack)"
+      },
+      'DC2': {
+        title: "Pin DC2: Airport Core DC2 (East Operational Redundancy)",
+        badge: "AIRPORT CORE (~40 RACKS)",
+        cardBorder: "border-l-orange-500",
+        badgeStyle: "bg-orange-500/20 text-orange-300 border-orange-500/40",
+        titleStyle: "text-orange-400",
+        desc: "ตำแหน่งในภาพ: ฝั่งขวาสุดของพื้นที่ท่าอากาศยาน (East Zone)\nหน้าที่ระบบ: ทำงานแบบ Active-Active Synchronous คู่กับ DC1 เพื่อรองรับ Fault Tolerance ตามมาตรฐาน TIA-942 Tier IV (Power Density: 8 kW/Rack)"
+      },
+      'DC': {
+        title: "Pin DC: Smart City Main Data Center",
+        badge: "SMART CITY MAIN DC (MICE)",
+        cardBorder: "border-l-cyan-500",
+        badgeStyle: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+        titleStyle: "text-cyan-400",
+        desc: "ตำแหน่งในภาพ: อาคาร MICE / Exhibition Hall ขนาดใหญ่ใจกลาง Airport City\nหน้าที่ระบบ: เป็นศูนย์กลางทางภูมิศาสตร์สำหรับ Smart City OCC, Central Billing, Central AI Surveillance และเชื่อมต่อโครงข่ายไปยัง E1-E9"
+      },
+      'E1': {
+        title: "Pin E1: Smart City Edge Node 1 (North High-Rise Cluster)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: กลุ่มอาคารสูงทิศเหนือ\nหน้าที่: รองรับ Smart Building Management และ High-density Wi-Fi ประจำกลุ่มอาคาร"
+      },
+      'E2': {
+        title: "Pin E2: Smart City Edge Node 2 (Commercial Complex)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: ศูนย์การค้าและอาคารพาณิชย์หลัก\nหน้าที่: ประมวลผล Retail Analytics, Smart Payment และ Local Surveillance"
+      },
+      'E3': {
+        title: "Pin E3: Smart City Edge Node 3 (West Entrance)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: ประตูเข้า-ออกเมืองทิศตะวันตก\nหน้าที่: ตรวจจับป้ายทะเบียน LPR, Smart Traffic Control และ Security Gateway"
+      },
+      'E4': {
+        title: "Pin E4: Smart City Edge Node 4 (Southwest District)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: โซนพาณิชย์และโรงแรมทิศตะวันตกเฉียงใต้\nหน้าที่: การจัดการพลังงาน Smart Grid และ IoT ประจำโซน"
+      },
+      'E5': {
+        title: "Pin E5: Smart City Edge Node 5 (South Commercial)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: กลุ่มอาคารพาณิชย์ทิศใต้\nหน้าที่: รองรับความหน่วงต่ำสำหรับระบบ Billing และ Wi-Fi สาธารณะ"
+      },
+      'E6': {
+        title: "Pin E6: Smart City Edge Node 6 (South Central)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: อาคารพาณิชย์และโรงแรมโซนใต้กลาง\nหน้าที่: ควบคุมระบบอาคารอัตโนมัติ (BAS) และ Local IoT Sensors"
+      },
+      'E7': {
+        title: "Pin E7: Smart City Edge Node 7 (Southeast Gateway)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: ฝั่งตะวันออกเฉียงใต้เชื่อมต่อทางเข้าสนามบิน\nหน้าที่: เชื่อมต่อการจราจรรอบเมืองและกล้องรักษาความปลอดภัย AI"
+      },
+      'E8': {
+        title: "Pin E8: Smart City Edge Node 8 (Lakeside Attraction)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: โซนสวนสาธารณะและทะเลสาบกลางเมือง (Attraction Zone)\nหน้าที่: ระบบรักษาความปลอดภัยนักท่องเที่ยว, Crowd Management และ Smart Environment Sensors"
+      },
+      'E9': {
+        title: "Pin E9: Smart City Edge Node 9 (Northeast Complex Zone)",
+        badge: "EDGE MICRO DC",
+        cardBorder: "border-l-sky-500",
+        badgeStyle: "bg-sky-500/20 text-sky-300 border-sky-500/40",
+        titleStyle: "text-sky-400",
+        desc: "ตำแหน่งในภาพ: กลุ่มอาคารโซนทิศตะวันออกเฉียงเหนือ (ข้างกลุ่ม E1 และใกล้โซน DC2)\nหน้าที่: รองรับการประมวลผล Local Analytics, Smart Grid และกระจายสัญญาณสื่อสารความหน่วงต่ำประจำโซนเหนือ"
+      }
+    };
+
+    function selectPin(pinKey) {
+      const data = pinData[pinKey];
+      if (!data) return;
+
+      const card = document.getElementById('pin-details-card');
+      card.className = `glass-panel p-5 rounded-xl border-l-4 ${data.cardBorder} space-y-3`;
+      
+      const title = document.getElementById('pin-title');
+      title.className = `text-base font-bold flex items-center gap-2 ${data.titleStyle}`;
+      title.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${data.title}`;
+
+      const badge = document.getElementById('pin-badge');
+      badge.className = `px-2.5 py-1 text-xs font-bold rounded border ${data.badgeStyle}`;
+      badge.innerText = data.badge;
+
+      document.getElementById('pin-desc').innerText = data.desc;
+    }
+
+    function runEmergencySim() {
+      const output = document.getElementById('sim-output');
+      output.innerHTML = `
+        <p class="text-amber-400">&gt; [17:30:01] ALERT: ตรวจพบการใช้งานข้อมูลหนาแน่นผิดปกติบริเวณ Edge Node E2 (Commercial Complex)</p>
+        <p class="text-cyan-300">&gt; [17:30:02] Smart City Edge E2 ทำการ Offload และสลับสายสัญญาณไปยัง Main Smart City DC (DC) อัตโนมัติ</p>
+        <p class="text-orange-300">&gt; [17:30:03] Airport Core DCs (DC1 & DC2) ยังคงทำงานแยกส่วนด้วยความเสถียร 100% ไม่ได้รับผลกระทบจาก Traffic เมือง</p>
+        <p class="text-emerald-400">&gt; [17:30:05] C2C Data Bus ทำการบาลานซ์โหลดสำเร็จ ระบบ IoT และ CCTV AI ทำงานราบรื่นไร้การดีเลย์!</p>
+      `;
+    }
+  </script>
+</body>
+</html>
